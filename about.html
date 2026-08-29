@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>集団 | About</title>
+    <meta name="description" content="集団について" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ovo&family=Zen+Kaku+Gothic+Antique:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=5" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1 class="site-title"><a href="./top.html" data-char-hover>集団</a></h1>
+      <nav class="site-nav" aria-label="メイン">
+        <a href="./index.html?view=works" data-char-hover>仕事</a>
+        <a href="./member.html" data-char-hover>仲間</a>
+        <a class="is-current" href="./about.html" data-char-hover>集団について</a>
+        <a href="./archive.html" data-char-hover>記録</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="about" id="about">
+        <div id="about-gallery" class="about-gallery" aria-live="polite"></div>
+        <div id="about-text" class="about-body">読み込み中...</div>
+        <p id="about-mail" class="about-mail"></p>
+      </section>
+    </main>
+
+    <footer class="site-footer" aria-label="フッター">
+      <small>集団 / shooodan.com 2026</small>
+    </footer>
+
+    <script src="./hover-chars.js?v=1" defer></script>
+    <script src="./about.js?v=4" defer></script>
+  </body>
+</html>
