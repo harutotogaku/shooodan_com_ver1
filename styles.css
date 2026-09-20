@@ -476,13 +476,34 @@ main {
   margin-top: 1.15rem;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: 0.9rem;
+}
+
+.archive-gallery-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.archive-gallery-row.is-pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.archive-gallery-cell {
+  min-width: 0;
+}
+
+.archive-gallery-cell.is-portrait {
+  justify-self: center;
+  width: min(100%, 420px);
 }
 
 .archive-gallery-item {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
   object-position: center;
   display: block;
   background: var(--surface);

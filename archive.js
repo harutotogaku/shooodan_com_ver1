@@ -17,7 +17,61 @@ function buildImageUrl(value, width = 1600, height = 900) {
   }
 
   const joiner = rawUrl.includes("?") ? "&" : "?";
-  return `${rawUrl}${joiner}w=${width}&h=${height}&fit=crop`;
+  return `${rawUrl}${joiner}w=${width}&h=${height}&fit=max`;
+}
+
+function isPortraitImage(value) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const width = Number(value.width || 0);
+  const height = Number(value.height || 0);
+  return width > 0 && height > 0 && height > width;
+}
+
+function isPortraitGalleryCell(cell) {
+  const img = cell.querySelector("img");
+
+  if (!img) {
+    return false;
+  }
+
+  if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+    return img.naturalHeight > img.naturalWidth;
+  }
+
+  return cell.dataset.portraitHint === "true";
+}
+
+function relayoutArchiveGallery(node) {
+  const cells = Array.from(node.querySelectorAll(".archive-gallery-cell"));
+
+  if (!cells.length) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  for (let index = 0; index < cells.length; index += 1) {
+    const cell = cells[index];
+    const nextCell = cells[index + 1];
+    const pairPortraits = nextCell && isPortraitGalleryCell(cell) && isPortraitGalleryCell(nextCell);
+    const row = document.createElement("div");
+
+    row.className = pairPortraits ? "archive-gallery-row is-pair" : "archive-gallery-row";
+    row.appendChild(cell);
+
+    if (pairPortraits) {
+      row.appendChild(nextCell);
+      index += 1;
+    }
+
+    fragment.appendChild(row);
+  }
+
+  node.innerHTML = "";
+  node.appendChild(fragment);
 }
 
 function applyImageTransition(img, src, altText) {
@@ -103,12 +157,26 @@ function renderArchiveGallery(node, items, title) {
 
   node.style.display = "grid";
   items.forEach((item, index) => {
+    const cell = document.createElement("div");
     const img = document.createElement("img");
+    const portraitHint = isPortraitImage(item);
+
+    cell.className = portraitHint ? "archive-gallery-cell is-portrait" : "archive-gallery-cell";
+    cell.dataset.portraitHint = portraitHint ? "true" : "false";
     img.className = "archive-gallery-item";
     img.loading = "lazy";
-    applyImageTransition(img, buildImageUrl(item, 1200, 675), `${title} 画像 ${index + 1}`);
-    node.appendChild(img);
+    img.addEventListener("load", () => {
+      cell.classList.toggle("is-portrait", img.naturalHeight > img.naturalWidth);
+      relayoutArchiveGallery(node);
+    });
+
+    applyImageTransition(img, buildImageUrl(item, 1200, 1600), `${title} 画像 ${index + 1}`);
+
+    cell.appendChild(img);
+    node.appendChild(cell);
   });
+
+  relayoutArchiveGallery(node);
 }
 
 function renderArchive(items) {
@@ -140,7 +208,7 @@ function renderArchive(items) {
     }
 
     renderArchiveGallery(galleryNode, item.archive_img, title);
-    renderLabelList(memberNode, normalizeListField(item.archive_member), "担当");
+    renderLabelList(memberNode, normalizeListField(item.archive_member), "仲間");
     renderLabelList(tagNode, normalizeListField(item.archive_tag), "タグ");
 
     articleNode.addEventListener("click", () => {
