@@ -3,8 +3,7 @@ const API_KEY = "vazE9HdnmvlhzQfPV8wAdd6g32suXSXAdhN1";
 
 const archiveListNode = document.querySelector("#archive-list");
 const archiveTemplate = document.querySelector("#archive-item-template");
-const blockViewButton = document.querySelector("#archive-view-block");
-const cardViewButton = document.querySelector("#archive-view-card");
+const viewToggleButton = document.querySelector("#archive-view-toggle");
 
 function buildImageUrl(value, width = 1600, height = 900) {
   if (!value) {
@@ -237,17 +236,20 @@ function setArchiveView(mode) {
   const isCard = mode === "card";
   archiveListNode.classList.toggle("is-card-view", isCard);
 
-  blockViewButton.classList.toggle("is-active", !isCard);
-  cardViewButton.classList.toggle("is-active", isCard);
+  if (viewToggleButton) {
+    viewToggleButton.textContent = isCard ? "縦で見る" : "カード一覧に戻る";
+    viewToggleButton.setAttribute("aria-pressed", String(!isCard));
+  }
 }
 
 function bindViewToggle() {
-  blockViewButton.addEventListener("click", () => {
-    setArchiveView("block");
-  });
+  if (!viewToggleButton) {
+    return;
+  }
 
-  cardViewButton.addEventListener("click", () => {
-    setArchiveView("card");
+  viewToggleButton.addEventListener("click", () => {
+    const isCard = archiveListNode.classList.contains("is-card-view");
+    setArchiveView(isCard ? "block" : "card");
   });
 }
 
@@ -270,7 +272,7 @@ async function fetchArchive() {
 async function init() {
   try {
     bindViewToggle();
-    setArchiveView("block");
+    setArchiveView("card");
 
     const items = await fetchArchive();
     renderArchive(items);
